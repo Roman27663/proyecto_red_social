@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>MiniTwitter</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f0f0f0;
+            margin: 0;
+        }
+
+        header {
+            background: #1da1f2;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .container {
+            width: 50%;
+            margin: auto;
+            margin-top: 20px;
+        }
+
+        .box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 80px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background: #1da1f2;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .post {
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        a {
+            color: #1da1f2;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>MiniTwitter</h1>
+</header>
+
+<div class="container">
+
+    {% if user.is_authenticated %}
+
+        <div class="box">
+            <p>Hola <b>{{ user.username }}</b> | <a href="/accounts/logout/">Salir</a></p>
+
+            <form method="POST" action="/crear/">
+                {% csrf_token %}
+                <textarea name="contenido" placeholder="¿Qué estás pensando?"></textarea>
+                <button type="submit">Publicar</button>
+            </form>
+        </div>
+
+    {% else %}
+
+        <div class="box">
+            <p>No has iniciado sesión</p>
+            <a href="/accounts/login/">Iniciar sesión</a>
+        </div>
+
+    {% endif %}
+
+    {% for post in posts %}
+        <div class="post">
+            <b>{{ post.usuario.username }}</b>
+            <p>{{ post.contenido }}</p>
+            <small>{{ post.fecha }}</small>
+        </div>
+    {% empty %}
+        <p>No hay posts todavía</p>
+    {% endfor %}
+
+</div>
+
+</body>
+</html>
