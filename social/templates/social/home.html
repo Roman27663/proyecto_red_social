@@ -98,13 +98,26 @@
 
     {% for post in posts %}
         <div class="post">
+
             <b>
                 <a href="/perfil/{{ post.usuario.username }}/">
                     {{ post.usuario.username }}
                 </a>
             </b>
+
             <p>{{ post.contenido }}</p>
             <small>{{ post.fecha }}</small>
+
+            <p>
+                ❤️ {{ post.like_set.count }} likes |
+
+                {% if post.id in liked_posts %}
+                    ❤️ <a href="/like/{{ post.id }}/">Unlike</a>
+                {% else %}
+                    🤍 <a href="/like/{{ post.id }}/">Like</a>
+                {% endif %}
+            </p>
+
         </div>
     {% empty %}
         <p>No hay posts todavía</p>

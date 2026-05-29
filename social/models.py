@@ -8,3 +8,10 @@ class Post(models.Model):
 
     def __str__(self):
         return f"{self.usuario.username}: {self.contenido[:30]}"
+    
+class Like(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('usuario', 'post')
