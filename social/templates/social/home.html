@@ -69,7 +69,15 @@
     {% if user.is_authenticated %}
 
         <div class="box">
-            <p>Hola <b>{{ user.username }}</b> | <a href="/accounts/logout/">Salir</a></p>
+            <p>
+                Hola <b>{{ user.username }}</b> |
+                <a href="/mi-perfil/">Mi perfil</a> |
+
+                <form method="post" action="/accounts/logout/" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Salir</button>
+                </form>
+            </p>
 
             <form method="POST" action="/crear/">
                 {% csrf_token %}
@@ -82,14 +90,19 @@
 
         <div class="box">
             <p>No has iniciado sesión</p>
-            <a href="/accounts/login/">Iniciar sesión</a>
+            <a href="/accounts/login/">Iniciar sesión</a> |
+            <a href="/register/">Crear cuenta</a>
         </div>
 
     {% endif %}
 
     {% for post in posts %}
         <div class="post">
-            <b>{{ post.usuario.username }}</b>
+            <b>
+                <a href="/perfil/{{ post.usuario.username }}/">
+                    {{ post.usuario.username }}
+                </a>
+            </b>
             <p>{{ post.contenido }}</p>
             <small>{{ post.fecha }}</small>
         </div>

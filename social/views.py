@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .models import Post
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 
 def home(request):
@@ -32,3 +33,22 @@ def register(request):
         form = UserCreationForm()
 
     return render(request, 'registration/register.html', {'form': form})
+
+def perfil(request, username):
+    usuario = User.objects.get(username=username)
+    posts = Post.objects.filter(usuario=usuario).order_by('-fecha')
+
+    return render(request, 'social/perfil.html', {
+        'usuario': usuario,
+        'posts': posts
+    })
+
+@login_required
+def mi_perfil(request):
+    usuario = request.user
+    posts = Post.objects.filter(usuario=usuario).order_by('-fecha')
+
+    return render(request, 'social/perfil.html', {
+        'usuario': usuario,
+        'posts': posts
+    })

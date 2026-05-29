@@ -1,0 +1,14 @@
+<h2>Perfil de {{ usuario.username }}</h2>
+
+<a href="/">Volver al inicio</a>
+
+<hr>
+
+{% for post in posts %}
+    <div>
+        <p>{{ post.contenido }}</p>
+        <small>{{ post.fecha }}</small>
+    </div>
+{% empty %}
+    <p>No tiene posts todavía</p>
+{% endfor %}

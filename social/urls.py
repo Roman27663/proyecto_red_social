@@ -5,5 +5,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('crear/', views.crear_post, name='crear_post'),
     path('register/', views.register, name='register'),
+    path('perfil/<str:username>/', views.perfil, name='perfil'),
+    path('mi-perfil/', views.mi_perfil, name='mi_perfil'),
 path('register/', views.register, name='register'),
 ]
