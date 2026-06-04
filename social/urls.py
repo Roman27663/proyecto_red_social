@@ -10,4 +10,5 @@ urlpatterns = [
     path('like/<int:post_id>/', views.like_post, name='like_post'),
     path('comentar/<int:post_id>/', views.crear_comentario, name='crear_comentario'),
     path('editar-perfil/', views.editar_perfil, name='editar_perfil'),
+    path('follow/<str:username>/', views.follow_toggle, name='follow_toggle'),
 ]

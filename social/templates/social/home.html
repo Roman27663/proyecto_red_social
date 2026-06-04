@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>MiniTwitter</title>
+
     <style>
         body {
             font-family: Arial;
@@ -10,17 +11,43 @@
             margin: 0;
         }
 
+        /* NAVBAR */
         header {
             background: #1da1f2;
             color: white;
             padding: 15px;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        header a {
+            color: white;
+            margin-right: 10px;
+            text-decoration: none;
+        }
+
+        header button {
+            background: transparent;
+            border: 1px solid white;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
         }
 
         .container {
-            width: 50%;
+            width: 40%;
             margin: auto;
-            margin-top: 20px;
+            margin-top: 100px;
         }
 
         .box {
@@ -46,9 +73,10 @@
 
         .post {
             background: white;
-            padding: 10px;
+            padding: 15px;
             border-radius: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0px 1px 3px rgba(0,0,0,0.1);
         }
 
         .comentario {
@@ -77,6 +105,21 @@
 
 <header>
     <h1>MiniTwitter</h1>
+
+    <div>
+        {% if user.is_authenticated %}
+            <a href="/">Inicio</a>
+            <a href="/mi-perfil/">Mi perfil</a>
+
+            <form method="post" action="/accounts/logout/" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Salir</button>
+            </form>
+        {% else %}
+            <a href="/login/">Login</a>
+            <a href="/register/">Registro</a>
+        {% endif %}
+    </div>
 </header>
 
 <div class="container">
@@ -84,15 +127,7 @@
     {% if user.is_authenticated %}
 
         <div class="box">
-            <p>
-                Hola <b>{{ user.username }}</b> |
-                <a href="/mi-perfil/">Mi perfil</a> |
-
-                <form method="post" action="/accounts/logout/" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit">Salir</button>
-                </form>
-            </p>
+            <p>Hola <b>{{ user.username }}</b></p>
 
             <form method="POST" action="/crear/">
                 {% csrf_token %}

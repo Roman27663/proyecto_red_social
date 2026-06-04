@@ -4,10 +4,32 @@
 
 <hr>
 
+<p>
+    👥 Seguidores: {{ followers_count }} |
+    ➡️ Siguiendo: {{ following_count }}
+</p>
+
+<hr>
+
 {% if usuario.profile.bio %}
     <p><b>Bio:</b> {{ usuario.profile.bio }}</p>
 {% else %}
     <p><b>Bio:</b> Sin descripción</p>
+{% endif %}
+
+<hr>
+
+{% if user != usuario %}
+    <form method="POST" action="/follow/{{ usuario.username }}/">
+        {% csrf_token %}
+        <button type="submit">
+            {% if is_following %}
+                Dejar de seguir
+            {% else %}
+                Seguir
+            {% endif %}
+        </button>
+    </form>
 {% endif %}
 
 {% if user == usuario %}
