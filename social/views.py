@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
 from .models import Post, Like, Comentario
+from .models import Profile
 
 
 def home(request):
@@ -95,3 +96,16 @@ def crear_comentario(request, post_id):
         )
 
     return redirect('home')
+
+@login_required
+def editar_perfil(request):
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        profile.bio = request.POST['bio']
+        profile.save()
+        return redirect('mi_perfil')
+
+    return render(request, 'social/editar_perfil.html', {
+        'profile': profile
+    })

@@ -1,0 +1,13 @@
+<h2>Editar perfil</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <textarea name="bio">{{ profile.bio }}</textarea>
+
+    <br>
+
+    <button type="submit">Guardar</button>
+</form>
+
+<a href="/mi-perfil/">Volver</a>

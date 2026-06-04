@@ -4,6 +4,22 @@
 
 <hr>
 
+{% if usuario.profile.bio %}
+    <p><b>Bio:</b> {{ usuario.profile.bio }}</p>
+{% else %}
+    <p><b>Bio:</b> Sin descripción</p>
+{% endif %}
+
+{% if user == usuario %}
+    <p>
+        <a href="/editar-perfil/">✏️ Editar perfil</a>
+    </p>
+{% endif %}
+
+<hr>
+
+<h3>Posts</h3>
+
 {% for post in posts %}
     <div>
         <p>{{ post.contenido }}</p>
