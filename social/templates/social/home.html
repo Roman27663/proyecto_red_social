@@ -51,6 +51,21 @@
             margin-bottom: 10px;
         }
 
+        .comentario {
+            margin-left: 20px;
+            padding: 5px;
+            border-left: 2px solid #ddd;
+            margin-top: 5px;
+        }
+
+        .comentario-form {
+            margin-top: 10px;
+        }
+
+        .comentario-form textarea {
+            height: 50px;
+        }
+
         a {
             color: #1da1f2;
             text-decoration: none;
@@ -117,6 +132,28 @@
                     🤍 <a href="/like/{{ post.id }}/">Like</a>
                 {% endif %}
             </p>
+
+            <hr>
+
+            <h4>Comentarios</h4>
+
+            {% for comentario in post.comentario_set.all %}
+                <div class="comentario">
+                    <b>{{ comentario.usuario.username }}</b>
+                    <p>{{ comentario.contenido }}</p>
+                    <small>{{ comentario.fecha }}</small>
+                </div>
+            {% empty %}
+                <p>No hay comentarios.</p>
+            {% endfor %}
+
+            {% if user.is_authenticated %}
+                <form method="POST" action="/comentar/{{ post.id }}/" class="comentario-form">
+                    {% csrf_token %}
+                    <textarea name="contenido" placeholder="Escribe un comentario..."></textarea>
+                    <button type="submit">Comentar</button>
+                </form>
+            {% endif %}
 
         </div>
     {% empty %}

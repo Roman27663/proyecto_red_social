@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import Post, Like
+from .models import Post, Like, Comentario
 
 
 def home(request):
@@ -78,5 +78,20 @@ def like_post(request, post_id):
 
     if not created:
         like.delete()
+
+    return redirect('home')
+
+@login_required
+def crear_comentario(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+
+    if request.method == "POST":
+        contenido = request.POST['contenido']
+
+        Comentario.objects.create(
+            usuario=request.user,
+            post=post,
+            contenido=contenido
+        )
 
     return redirect('home')
