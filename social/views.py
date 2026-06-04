@@ -7,13 +7,27 @@ from .models import Post, Like, Comentario, Profile, Follow
 
 
 def home(request):
-    posts = Post.objects.all().order_by('-fecha')
-
     liked_posts = []
+    filtro = request.GET.get('filtro', 'siguiendo')
 
     if request.user.is_authenticated:
         likes = Like.objects.filter(usuario=request.user)
         liked_posts = [like.post.id for like in likes]
+
+        if filtro == 'global':
+            posts = Post.objects.all().order_by('-fecha')
+
+        else:  # siguiendo
+            following_users = Follow.objects.filter(
+                follower=request.user
+            ).values_list('followed', flat=True)
+
+            posts = Post.objects.filter(
+                usuario__in=list(following_users) + [request.user.id]
+            ).order_by('-fecha')
+
+    else:
+        posts = Post.objects.all().order_by('-fecha')
 
     return render(request, 'social/home.html', {
         'posts': posts,
