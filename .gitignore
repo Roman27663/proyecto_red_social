@@ -1,0 +1,14 @@
+# --- Entorno Virtual (ignorar siempre)
+venv/
+.venv/
+Env/
+__pycache__/
+*.pyc 
+
+# --- Archivos de configuración local
+.env
+
+# --- Base de datos
+# NOTA: dejamos la linea de abajo comentada con # para que git
+# NO ignore la base de datos y la pueda subir a github
+# db.sqlite3
