@@ -145,6 +145,20 @@ def editar_perfil(request):
     })
 
 
+def buscar_usuarios(request):
+    query = request.GET.get('q', '')
+
+    resultados = []
+
+    if query:
+        resultados = User.objects.filter(username__icontains=query)
+
+    return render(request, 'social/buscar.html', {
+        'query': query,
+        'resultados': resultados
+    })
+
+
 @login_required
 def follow_toggle(request, username):
     user_to_follow = get_object_or_404(User, username=username)

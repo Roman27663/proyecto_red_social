@@ -1,0 +1,20 @@
+<h2>Buscar usuarios</h2>
+
+<form method="GET">
+    <input type="text" name="q" placeholder="Buscar usuario..." value="{{ query }}">
+    <button type="submit">Buscar</button>
+</form>
+
+<hr>
+
+{% for user in resultados %}
+    <p>
+        <a href="/perfil/{{ user.username }}/">
+            {{ user.username }}
+        </a>
+    </p>
+{% empty %}
+    {% if query %}
+        <p>No se encontraron usuarios</p>
+    {% endif %}
+{% endfor %}
