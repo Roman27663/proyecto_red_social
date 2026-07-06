@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -12,18 +13,18 @@ def home(request):
 
     if request.user.is_authenticated:
         likes = Like.objects.filter(usuario=request.user)
-        liked_posts = [like.post.id for like in likes]
+        liked_posts = list(likes.values_list('post_id', flat=True))
 
         if filtro == 'global':
             posts = Post.objects.all().order_by('-fecha')
 
-        else:  # siguiendo
+        else:
             following_users = Follow.objects.filter(
                 follower=request.user
-            ).values_list('followed', flat=True)
+            ).values_list('followed_id', flat=True)
 
             posts = Post.objects.filter(
-                usuario__in=list(following_users) + [request.user.id]
+                usuario__id__in=list(following_users) + [request.user.id]
             ).order_by('-fecha')
 
     else:
@@ -38,12 +39,15 @@ def home(request):
 @login_required
 def crear_post(request):
     if request.method == "POST":
-        contenido = request.POST['contenido']
+        contenido = request.POST.get('contenido', '').strip()
+        imagen = request.FILES.get('imagen')
 
-        Post.objects.create(
-            usuario=request.user,
-            contenido=contenido
-        )
+        if contenido or imagen:
+            Post.objects.create(
+                usuario=request.user,
+                contenido=contenido,
+                imagen=imagen
+            )
 
     return redirect('home')
 
@@ -111,8 +115,16 @@ def like_post(request, post_id):
 
     if not created:
         like.delete()
+        liked = False
+    else:
+        liked = True
 
-    return redirect('home')
+    likes_count = Like.objects.filter(post=post).count()
+
+    return JsonResponse({
+        'liked': liked,
+        'likes_count': likes_count
+    })
 
 
 @login_required
@@ -120,13 +132,14 @@ def crear_comentario(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
     if request.method == "POST":
-        contenido = request.POST['contenido']
+        contenido = request.POST.get('contenido', '').strip()
 
-        Comentario.objects.create(
-            usuario=request.user,
-            post=post,
-            contenido=contenido
-        )
+        if contenido:
+            Comentario.objects.create(
+                usuario=request.user,
+                post=post,
+                contenido=contenido
+            )
 
     return redirect('home')
 
@@ -136,7 +149,7 @@ def editar_perfil(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
 
     if request.method == "POST":
-        profile.bio = request.POST['bio']
+        profile.bio = request.POST.get('bio', '').strip()
         profile.save()
         return redirect('mi_perfil')
 
@@ -146,8 +159,7 @@ def editar_perfil(request):
 
 
 def buscar_usuarios(request):
-    query = request.GET.get('q', '')
-
+    query = request.GET.get('q', '').strip()
     resultados = []
 
     if query:
@@ -175,3 +187,20 @@ def follow_toggle(request, username):
         follow.delete()
 
     return redirect('perfil', username=username)
+
+
+def usuarios_recomendados(request):
+    if not request.user.is_authenticated:
+        return redirect('home')
+
+    following = Follow.objects.filter(
+        follower=request.user
+    ).values_list('followed_id', flat=True)
+
+    usuarios = User.objects.exclude(
+        id__in=list(following) + [request.user.id]
+    )[:10]
+
+    return render(request, 'social/recomendados.html', {
+        'usuarios': usuarios
+    })

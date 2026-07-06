@@ -1,0 +1,12 @@
+<h2>Usuarios recomendados</h2>
+
+{% for u in usuarios %}
+    <p>
+        <a href="/perfil/{{ u.username }}/">
+            {{ u.username }}
+        </a>
+        | <a href="/follow/{{ u.username }}/">Seguir</a>
+    </p>
+{% empty %}
+    <p>No hay recomendaciones</p>
+{% endfor %}

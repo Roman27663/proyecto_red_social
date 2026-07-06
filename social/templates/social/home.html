@@ -79,19 +79,17 @@
             box-shadow: 0px 1px 3px rgba(0,0,0,0.1);
         }
 
+        .post img {
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
         .comentario {
             margin-left: 20px;
             padding: 5px;
             border-left: 2px solid #ddd;
             margin-top: 5px;
-        }
-
-        .comentario-form {
-            margin-top: 10px;
-        }
-
-        .comentario-form textarea {
-            height: 50px;
         }
 
         a {
@@ -109,17 +107,18 @@
     <div>
         {% if user.is_authenticated %}
             <a href="/">Inicio</a>
-            <a href="/mi-perfil/">Mi perfil</a>
-            <a href="/?filtro=global">Explorar</a>
+            <a href="/?filtro=global">Explorar posts</a>
             <a href="/?filtro=siguiendo">Siguiendo</a>
             <a href="/buscar/">Buscar</a>
+            <a href="/recomendados/">Personas</a>
+            <a href="/mi-perfil/">Mi perfil</a>
 
             <form method="post" action="/accounts/logout/" style="display:inline;">
                 {% csrf_token %}
                 <button type="submit">Salir</button>
             </form>
         {% else %}
-            <a href="/login/">Login</a>
+            <a href="/accounts/login/">Login</a>
             <a href="/register/">Registro</a>
         {% endif %}
     </div>
@@ -132,21 +131,22 @@
         <div class="box">
             <p>Hola <b>{{ user.username }}</b></p>
 
-            <form method="POST" action="/crear/">
+            <form method="POST" action="/crear/" enctype="multipart/form-data">
                 {% csrf_token %}
                 <textarea name="contenido" placeholder="¿Qué estás pensando?"></textarea>
+
+                <input type="file" name="imagen" accept="image/*">
+
+                <br><br>
+
                 <button type="submit">Publicar</button>
             </form>
         </div>
 
     {% else %}
-
         <div class="box">
             <p>No has iniciado sesión</p>
-            <a href="/accounts/login/">Iniciar sesión</a> |
-            <a href="/register/">Crear cuenta</a>
         </div>
-
     {% endif %}
 
     {% for post in posts %}
@@ -159,16 +159,23 @@
             </b>
 
             <p>{{ post.contenido }}</p>
+
+            {% if post.imagen %}
+                <img src="{{ post.imagen.url }}">
+            {% endif %}
+
             <small>{{ post.fecha }}</small>
 
             <p>
-                ❤️ {{ post.like_set.count }} likes |
+                ❤️ <span id="likes-{{ post.id }}">{{ post.like_set.count }}</span> likes |
 
-                {% if post.id in liked_posts %}
-                    ❤️ <a href="/like/{{ post.id }}/">Unlike</a>
-                {% else %}
-                    🤍 <a href="/like/{{ post.id }}/">Like</a>
-                {% endif %}
+                <button onclick="toggleLike({{ post.id }})" id="btn-{{ post.id }}">
+                    {% if post.id in liked_posts %}
+                        Unlike
+                    {% else %}
+                        Like
+                    {% endif %}
+                </button>
             </p>
 
             <hr>
@@ -186,7 +193,7 @@
             {% endfor %}
 
             {% if user.is_authenticated %}
-                <form method="POST" action="/comentar/{{ post.id }}/" class="comentario-form">
+                <form method="POST" action="/comentar/{{ post.id }}/">
                     {% csrf_token %}
                     <textarea name="contenido" placeholder="Escribe un comentario..."></textarea>
                     <button type="submit">Comentar</button>
@@ -199,6 +206,39 @@
     {% endfor %}
 
 </div>
+
+<script>
+function toggleLike(postId) {
+    fetch(`/like/${postId}/`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken")
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById(`likes-${postId}`).innerText = data.likes_count;
+
+        const btn = document.getElementById(`btn-${postId}`);
+        btn.innerText = data.liked ? "Unlike" : "Like";
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
 
 </body>
 </html>
