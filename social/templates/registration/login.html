@@ -1,7 +1,117 @@
-<h2>Login</h2>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iniciar sesión · Bubble</title>
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Entrar</button>
-</form>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+  :root{
+    --bg:#f6f7fb;--card:#ffffff;--text:#0f1419;--muted:#6b7280;
+    --border:#eef0f4;--brand:#7c5cff;--brand-dark:#5b3df5;
+    --radius:18px;--radius-sm:12px;
+    --shadow:0 1px 2px rgba(15,23,42,.04), 0 6px 20px rgba(15,23,42,.06);
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    background:linear-gradient(160deg,#f6f7fb 0%,#efeaff 100%);
+    color:var(--text);margin:0;min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  a{color:var(--brand);text-decoration:none;}
+  a:hover{color:var(--brand-dark);}
+
+  .card{
+    width:100%;max-width:400px;background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius);box-shadow:var(--shadow);padding:36px;margin:20px;
+  }
+
+  .logo{
+    display:flex;align-items:center;gap:8px;justify-content:center;
+    font-weight:800;font-size:24px;margin-bottom:6px;
+    background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+
+  h2{
+    margin:0 0 24px;
+    font-size:16px;
+    font-weight:500;
+    color:var(--muted);
+    text-align:center;
+  }
+
+  form p{margin:0 0 16px;}
+
+  form input{
+    width:100%;
+    border:1px solid var(--border);
+    border-radius:var(--radius-sm);
+    padding:11px 14px;
+    font-family:inherit;
+    font-size:14px;
+    background:#fafafd;
+  }
+
+  form input:focus{
+    outline:none;
+    border-color:var(--brand);
+    background:#fff;
+  }
+
+  button{
+    background:var(--brand);
+    color:#fff;
+    border:none;
+    padding:12px 22px;
+    border-radius:999px;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    font-family:inherit;
+    width:100%;
+    margin-top:6px;
+  }
+
+  button:hover{background:var(--brand-dark);}
+
+  .bottom-text{
+    text-align:center;
+    margin-top:18px;
+    font-size:13px;
+    color:var(--muted);
+  }
+</style>
+</head>
+
+<body>
+<div class="card">
+
+    <div class="logo">
+        <i class="fa-solid fa-circle-nodes"></i> Bubble
+    </div>
+
+    <h2>Iniciar sesión</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Entrar</button>
+    </form>
+
+    <div class="bottom-text">
+        ¿No tenés cuenta?
+        <a href="/register/">Crear cuenta</a>
+    </div>
+
+</div>
+</body>
+</html>

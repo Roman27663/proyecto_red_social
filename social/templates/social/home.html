@@ -1,148 +1,241 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>MiniTwitter</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bubble</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root{
+    --bg:#f6f7fb;
+    --card:#ffffff;
+    --text:#0f1419;
+    --muted:#6b7280;
+    --border:#eef0f4;
+    --brand:#7c5cff;
+    --brand-dark:#5b3df5;
+    --like:#f0245e;
+    --radius:18px;
+    --radius-sm:12px;
+    --shadow:0 1px 2px rgba(15,23,42,.04), 0 6px 20px rgba(15,23,42,.06);
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    margin:0;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--brand);text-decoration:none;}
+  a:hover{color:var(--brand-dark);}
 
-    <style>
-        body {
-            font-family: Arial;
-            background: #f0f0f0;
-            margin: 0;
-        }
+  header{
+    background:rgba(255,255,255,.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+    padding:12px 24px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    position:fixed;
+    top:0;left:0;right:0;
+    z-index:1000;
+  }
+  .brand{
+    display:flex;align-items:center;gap:8px;
+    font-weight:800;font-size:20px;
+    background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .brand i{color:var(--brand);-webkit-text-fill-color:var(--brand);}
+  nav{display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+  nav a, nav button{
+    display:flex;align-items:center;gap:6px;
+    font-size:14px;font-weight:500;
+    color:var(--text);
+    padding:8px 14px;
+    border-radius:999px;
+    background:transparent;
+    border:none;
+    cursor:pointer;
+    font-family:inherit;
+    transition:background .15s ease, color .15s ease;
+  }
+  nav a:hover, nav button:hover{background:#f1eefe;color:var(--brand-dark);}
+  nav .logout-btn{border:1px solid var(--border);color:var(--muted);}
+  nav .logout-btn:hover{border-color:var(--like);color:var(--like);background:#fdeef1;}
+  nav span.label{display:inline;}
 
-        header {
-            background: #1da1f2;
-            color: white;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
+  .container{
+    max-width:600px;
+    margin:0 auto;
+    padding:96px 16px 60px;
+  }
 
-        header h1 {
-            margin: 0;
-            font-size: 20px;
-        }
+  .box{
+    background:var(--card);
+    padding:18px;
+    border-radius:var(--radius);
+    margin-bottom:20px;
+    box-shadow:var(--shadow);
+    border:1px solid var(--border);
+  }
+  .box p{margin:0 0 12px;color:var(--muted);}
+  .box p b{color:var(--text);}
 
-        header a {
-            color: white;
-            margin-right: 10px;
-            text-decoration: none;
-        }
+  textarea{
+    width:100%;
+    min-height:70px;
+    resize:vertical;
+    border:1px solid var(--border);
+    border-radius:var(--radius-sm);
+    padding:12px 14px;
+    font-family:inherit;
+    font-size:14px;
+    margin-bottom:10px;
+    background:#fafafd;
+    transition:border-color .15s ease;
+  }
+  textarea:focus{outline:none;border-color:var(--brand);background:#fff;}
 
-        header button {
-            background: transparent;
-            border: 1px solid white;
-            color: white;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
+  input[type="file"]{
+    font-size:13px;color:var(--muted);margin-bottom:12px;
+  }
 
-        .container {
-            width: 40%;
-            margin: auto;
-            margin-top: 100px;
-        }
+  button, .btn{
+    background:var(--brand);
+    color:#fff;
+    border:none;
+    padding:10px 18px;
+    border-radius:999px;
+    cursor:pointer;
+    font-weight:600;
+    font-size:14px;
+    font-family:inherit;
+    transition:background .15s ease, transform .1s ease;
+  }
+  button:hover{background:var(--brand-dark);}
+  button:active{transform:scale(.97);}
 
-        .box {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
+  .post{
+    background:var(--card);
+    padding:18px;
+    border-radius:var(--radius);
+    margin-bottom:18px;
+    border:1px solid var(--border);
+    box-shadow:var(--shadow);
+  }
+  .post-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .avatar{
+    width:42px;height:42px;border-radius:50%;
+    background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:16px;flex-shrink:0;
+    text-transform:uppercase;
+  }
+  .post-header b a{color:var(--text);font-weight:700;font-size:15px;}
+  .post p.contenido{margin:4px 0 10px;font-size:15px;line-height:1.5;}
+  .post img{
+    width:100%;
+    border-radius:var(--radius-sm);
+    margin-top:4px;
+    display:block;
+  }
+  .post small{color:var(--muted);font-size:12.5px;}
 
-        textarea {
-            width: 100%;
-            height: 80px;
-            margin-bottom: 10px;
-        }
+  .post-actions{
+    display:flex;align-items:center;gap:18px;
+    margin:12px 0 4px;
+    padding-top:10px;
+    border-top:1px solid var(--border);
+  }
+  .like-wrap{display:flex;align-items:center;gap:8px;}
+  .like-count{font-size:14px;color:var(--muted);font-weight:600;}
+  .like-btn{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--muted);
+    padding:7px 14px;
+    display:flex;align-items:center;gap:6px;
+    font-size:13px;
+  }
+  .like-btn:hover{background:#fdeef1;border-color:#f8c9d5;color:var(--like);}
+  .like-btn.liked{background:#fdeef1;border-color:#f8c9d5;color:var(--like);}
+  .like-btn i{color:inherit;}
 
-        button {
-            background: #1da1f2;
-            color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-        }
+  h4.comments-title{
+    font-size:13px;text-transform:uppercase;letter-spacing:.04em;
+    color:var(--muted);margin:14px 0 8px;font-weight:700;
+  }
+  .comentario{
+    background:#f9f9fc;
+    border-left:3px solid var(--brand);
+    border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+    padding:8px 12px;
+    margin-top:8px;
+  }
+  .comentario b{font-size:13.5px;}
+  .comentario p{margin:2px 0;font-size:14px;}
+  .comentario small{color:var(--muted);}
 
-        .post {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            box-shadow: 0px 1px 3px rgba(0,0,0,0.1);
-        }
+  .comment-form{margin-top:12px;}
+  .comment-form textarea{min-height:44px;font-size:13.5px;}
+  .comment-form button{padding:8px 16px;font-size:13px;}
 
-        .post img {
-            width: 100%;
-            border-radius: 10px;
-            margin-top: 10px;
-        }
+  .empty-state{
+    text-align:center;color:var(--muted);
+    background:var(--card);
+    padding:30px;border-radius:var(--radius);
+    border:1px dashed var(--border);
+  }
 
-        .comentario {
-            margin-left: 20px;
-            padding: 5px;
-            border-left: 2px solid #ddd;
-            margin-top: 5px;
-        }
-
-        a {
-            color: #1da1f2;
-            text-decoration: none;
-        }
-    </style>
+  @media (max-width:640px){
+    header{padding:10px 14px;}
+    nav span.label{display:none;}
+    nav a, nav button{padding:8px 10px;}
+    .container{padding-top:88px;}
+  }
+</style>
 </head>
-
 <body>
 
 <header>
-    <h1>MiniTwitter</h1>
-
-    <div>
+    <div class="brand"><i class="fa-solid fa-circle-nodes"></i> Bubble</div>
+    <nav>
         {% if user.is_authenticated %}
-            <a href="/">Inicio</a>
-            <a href="/?filtro=global">Explorar posts</a>
-            <a href="/?filtro=siguiendo">Siguiendo</a>
-            <a href="/buscar/">Buscar</a>
-            <a href="/recomendados/">Personas</a>
-            <a href="/mi-perfil/">Mi perfil</a>
-
+            <a href="/"><i class="fa-solid fa-house"></i><span class="label">Inicio</span></a>
+            <a href="/?filtro=global"><i class="fa-solid fa-globe"></i><span class="label">Explorar</span></a>
+            <a href="/?filtro=siguiendo"><i class="fa-solid fa-user-group"></i><span class="label">Siguiendo</span></a>
+            <a href="/buscar/"><i class="fa-solid fa-magnifying-glass"></i><span class="label">Buscar</span></a>
+            <a href="/recomendados/"><i class="fa-solid fa-user-plus"></i><span class="label">Personas</span></a>
+            <a href="/mi-perfil/"><i class="fa-solid fa-user"></i><span class="label">Mi perfil</span></a>
             <form method="post" action="/accounts/logout/" style="display:inline;">
                 {% csrf_token %}
-                <button type="submit">Salir</button>
+                <button type="submit" class="logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i><span class="label">Salir</span></button>
             </form>
         {% else %}
-            <a href="/accounts/login/">Login</a>
-            <a href="/register/">Registro</a>
+            <a href="/accounts/login/"><i class="fa-solid fa-right-to-bracket"></i><span class="label">Login</span></a>
+            <a href="/register/"><i class="fa-solid fa-user-plus"></i><span class="label">Registro</span></a>
         {% endif %}
-    </div>
+    </nav>
 </header>
 
 <div class="container">
 
     {% if user.is_authenticated %}
-
         <div class="box">
-            <p>Hola <b>{{ user.username }}</b></p>
-
+            <p>Hola <b>{{ user.username }}</b> 👋</p>
             <form method="POST" action="/crear/" enctype="multipart/form-data">
                 {% csrf_token %}
                 <textarea name="contenido" placeholder="¿Qué estás pensando?"></textarea>
-
                 <input type="file" name="imagen" accept="image/*">
-
-                <br><br>
-
-                <button type="submit">Publicar</button>
+                <br>
+                <button type="submit"><i class="fa-solid fa-paper-plane"></i> Publicar</button>
             </form>
         </div>
-
     {% else %}
         <div class="box">
             <p>No has iniciado sesión</p>
@@ -151,14 +244,12 @@
 
     {% for post in posts %}
         <div class="post">
+            <div class="post-header">
+                <div class="avatar">{{ post.usuario.username|slice:":1" }}</div>
+                <b><a href="/perfil/{{ post.usuario.username }}/">{{ post.usuario.username }}</a></b>
+            </div>
 
-            <b>
-                <a href="/perfil/{{ post.usuario.username }}/">
-                    {{ post.usuario.username }}
-                </a>
-            </b>
-
-            <p>{{ post.contenido }}</p>
+            <p class="contenido">{{ post.contenido }}</p>
 
             {% if post.imagen %}
                 <img src="{{ post.imagen.url }}">
@@ -166,22 +257,21 @@
 
             <small>{{ post.fecha }}</small>
 
-            <p>
-                ❤️ <span id="likes-{{ post.id }}">{{ post.like_set.count }}</span> likes |
+            <div class="post-actions">
+                <div class="like-wrap">
+                    <button
+                        onclick="toggleLike({{ post.id }})"
+                        id="btn-{{ post.id }}"
+                        class="like-btn {% if post.id in liked_posts %}liked{% endif %}"
+                    >
+                        <i class="fa-solid fa-heart"></i>
+                        {% if post.id in liked_posts %}Unlike{% else %}Like{% endif %}
+                    </button>
+                    <span class="like-count"><span id="likes-{{ post.id }}">{{ post.like_set.count }}</span> likes</span>
+                </div>
+            </div>
 
-                <button onclick="toggleLike({{ post.id }})" id="btn-{{ post.id }}">
-                    {% if post.id in liked_posts %}
-                        Unlike
-                    {% else %}
-                        Like
-                    {% endif %}
-                </button>
-            </p>
-
-            <hr>
-
-            <h4>Comentarios</h4>
-
+            <h4 class="comments-title">Comentarios</h4>
             {% for comentario in post.comentario_set.all %}
                 <div class="comentario">
                     <b>{{ comentario.usuario.username }}</b>
@@ -189,20 +279,19 @@
                     <small>{{ comentario.fecha }}</small>
                 </div>
             {% empty %}
-                <p>No hay comentarios.</p>
+                <p style="color:var(--muted);font-size:14px;">No hay comentarios.</p>
             {% endfor %}
 
             {% if user.is_authenticated %}
-                <form method="POST" action="/comentar/{{ post.id }}/">
+                <form method="POST" action="/comentar/{{ post.id }}/" class="comment-form">
                     {% csrf_token %}
                     <textarea name="contenido" placeholder="Escribe un comentario..."></textarea>
-                    <button type="submit">Comentar</button>
+                    <button type="submit"><i class="fa-solid fa-comment"></i> Comentar</button>
                 </form>
             {% endif %}
-
         </div>
     {% empty %}
-        <p>No hay posts todavía</p>
+        <div class="empty-state">No hay posts todavía</div>
     {% endfor %}
 
 </div>
@@ -218,9 +307,11 @@ function toggleLike(postId) {
     .then(res => res.json())
     .then(data => {
         document.getElementById(`likes-${postId}`).innerText = data.likes_count;
-
         const btn = document.getElementById(`btn-${postId}`);
-        btn.innerText = data.liked ? "Unlike" : "Like";
+        btn.innerHTML = data.liked
+            ? '<i class="fa-solid fa-heart"></i> Unlike'
+            : '<i class="fa-solid fa-heart"></i> Like';
+        btn.classList.toggle('liked', data.liked);
     });
 }
 

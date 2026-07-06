@@ -1,13 +1,61 @@
-<h2>Editar perfil</h2>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editar perfil · Bubble</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root{
+    --bg:#f6f7fb;--card:#ffffff;--text:#0f1419;--muted:#6b7280;
+    --border:#eef0f4;--brand:#7c5cff;--brand-dark:#5b3df5;
+    --radius:18px;--radius-sm:12px;
+    --shadow:0 1px 2px rgba(15,23,42,.04), 0 6px 20px rgba(15,23,42,.06);
+  }
+  *{box-sizing:border-box;}
+  body{font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);margin:0;
+       display:flex;align-items:center;justify-content:center;min-height:100vh;}
+  a{color:var(--brand);text-decoration:none;}
+  a:hover{color:var(--brand-dark);}
 
-<form method="POST">
-    {% csrf_token %}
+  .card{
+    width:100%;max-width:420px;background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius);box-shadow:var(--shadow);padding:32px;margin:20px;
+  }
+  .card h2{margin:0 0 20px;font-size:22px;display:flex;align-items:center;gap:10px;}
+  .card h2 i{color:var(--brand);}
 
-    <textarea name="bio">{{ profile.bio }}</textarea>
+  label{font-size:13px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px;}
+  textarea{
+    width:100%;min-height:110px;resize:vertical;
+    border:1px solid var(--border);border-radius:var(--radius-sm);
+    padding:12px 14px;font-family:inherit;font-size:14px;
+    margin-bottom:16px;background:#fafafd;transition:border-color .15s ease;
+  }
+  textarea:focus{outline:none;border-color:var(--brand);background:#fff;}
 
-    <br>
+  button{
+    background:var(--brand);color:#fff;border:none;padding:11px 22px;
+    border-radius:999px;font-weight:600;font-size:14px;cursor:pointer;
+    font-family:inherit;width:100%;
+  }
+  button:hover{background:var(--brand-dark);}
 
-    <button type="submit">Guardar</button>
-</form>
-
-<a href="/mi-perfil/">Volver</a>
+  .back-link{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:14px;margin-top:16px;}
+</style>
+</head>
+<body>
+<div class="card">
+    <h2><i class="fa-solid fa-pen"></i> Editar perfil</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="bio">Bio</label>
+        <textarea name="bio" id="bio">{{ profile.bio }}</textarea>
+        <button type="submit"><i class="fa-solid fa-check"></i> Guardar</button>
+    </form>
+    <a href="/mi-perfil/" class="back-link"><i class="fa-solid fa-arrow-left"></i> Volver</a>
+</div>
+</body>
+</html>

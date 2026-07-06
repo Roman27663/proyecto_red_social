@@ -1,59 +1,128 @@
-<h2>Perfil de {{ usuario.username }}</h2>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ usuario.username }} · Bubble</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root{
+    --bg:#f6f7fb;--card:#ffffff;--text:#0f1419;--muted:#6b7280;
+    --border:#eef0f4;--brand:#7c5cff;--brand-dark:#5b3df5;--like:#f0245e;
+    --radius:18px;--radius-sm:12px;
+    --shadow:0 1px 2px rgba(15,23,42,.04), 0 6px 20px rgba(15,23,42,.06);
+  }
+  *{box-sizing:border-box;}
+  body{font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);margin:0;}
+  a{color:var(--brand);text-decoration:none;}
+  a:hover{color:var(--brand-dark);}
+  .container{max-width:600px;margin:0 auto;padding:32px 16px 60px;}
+  .back-link{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:14px;margin-bottom:18px;}
 
-<a href="/">Volver al inicio</a>
+  .profile-card{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:26px;text-align:center;margin-bottom:20px;
+  }
+  .avatar-lg{
+    width:84px;height:84px;border-radius:50%;margin:0 auto 14px;
+    background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:32px;font-weight:800;text-transform:uppercase;
+  }
+  .profile-card h2{margin:0 0 4px;font-size:22px;}
+  .stats{display:flex;justify-content:center;gap:28px;margin:16px 0;}
+  .stats div{text-align:center;}
+  .stats b{display:block;font-size:17px;}
+  .stats span{color:var(--muted);font-size:13px;}
+  .bio{color:var(--muted);font-size:14.5px;margin:14px 0;line-height:1.5;}
+  .bio b{color:var(--text);}
 
-<hr>
+  .action-btn{
+    background:var(--brand);color:#fff;border:none;padding:10px 22px;
+    border-radius:999px;font-weight:600;font-size:14px;cursor:pointer;
+    font-family:inherit;display:inline-flex;align-items:center;gap:8px;
+    transition:background .15s ease;
+  }
+  .action-btn:hover{background:var(--brand-dark);}
+  .action-btn.following{background:#fff;color:var(--text);border:1px solid var(--border);}
+  .action-btn.following:hover{background:#fdeef1;color:var(--like);border-color:#f8c9d5;}
 
-<p>
-    👥 Seguidores: {{ followers_count }} |
-    ➡️ Siguiendo: {{ following_count }}
-</p>
+  .edit-link{
+    display:inline-flex;align-items:center;gap:6px;
+    font-weight:600;font-size:14px;
+    border:1px solid var(--border);padding:9px 18px;border-radius:999px;
+  }
+  .edit-link:hover{background:#f1eefe;}
 
-<hr>
+  h3.section-title{font-size:15px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:24px 0 12px;font-weight:700;}
 
-{% if usuario.profile.bio %}
-    <p><b>Bio:</b> {{ usuario.profile.bio }}</p>
-{% else %}
-    <p><b>Bio:</b> Sin descripción</p>
-{% endif %}
+  .post{
+    background:var(--card);padding:16px 18px;border-radius:var(--radius);
+    margin-bottom:14px;border:1px solid var(--border);box-shadow:var(--shadow);
+  }
+  .post p{margin:0 0 8px;font-size:15px;line-height:1.5;}
+  .post img{width:100%;border-radius:var(--radius-sm);margin-top:6px;display:block;}
+  .post small{color:var(--muted);font-size:12.5px;}
 
-<hr>
+  .empty-state{text-align:center;color:var(--muted);background:var(--card);padding:26px;border-radius:var(--radius);border:1px dashed var(--border);}
+</style>
+</head>
+<body>
+<div class="container">
 
-{% if user != usuario %}
-    <form method="POST" action="/follow/{{ usuario.username }}/">
-        {% csrf_token %}
-        <button type="submit">
-            {% if is_following %}
-                Dejar de seguir
+    <a href="/" class="back-link"><i class="fa-solid fa-arrow-left"></i> Volver al inicio</a>
+
+    <div class="profile-card">
+        <div class="avatar-lg">{{ usuario.username|slice:":1" }}</div>
+        <h2>{{ usuario.username }}</h2>
+
+        <div class="stats">
+            <div><b>{{ followers_count }}</b><span>Seguidores</span></div>
+            <div><b>{{ following_count }}</b><span>Siguiendo</span></div>
+        </div>
+
+        <div class="bio">
+            {% if usuario.profile.bio %}
+                <b>Bio:</b> {{ usuario.profile.bio }}
             {% else %}
-                Seguir
+                <b>Bio:</b> Sin descripción
             {% endif %}
-        </button>
-    </form>
-{% endif %}
+        </div>
 
-{% if user == usuario %}
-    <p>
-        <a href="/editar-perfil/">✏️ Editar perfil</a>
-    </p>
-{% endif %}
-
-<hr>
-
-<h3>Posts</h3>
-
-{% for post in posts %}
-    <div style="margin-bottom: 15px; padding: 10px; border-bottom: 1px solid #ddd;">
-
-        <p>{{ post.contenido }}</p>
-
-        {% if post.imagen %}
-            <img src="{{ post.imagen.url }}" style="max-width:100%; border-radius:10px; margin-top:10px;">
+        {% if user != usuario %}
+            <form method="POST" action="/follow/{{ usuario.username }}/">
+                {% csrf_token %}
+                <button type="submit" class="action-btn {% if is_following %}following{% endif %}">
+                    {% if is_following %}
+                        <i class="fa-solid fa-user-check"></i> Dejar de seguir
+                    {% else %}
+                        <i class="fa-solid fa-user-plus"></i> Seguir
+                    {% endif %}
+                </button>
+            </form>
         {% endif %}
 
-        <small>{{ post.fecha }}</small>
-
+        {% if user == usuario %}
+            <a href="/editar-perfil/" class="edit-link"><i class="fa-solid fa-pen"></i> Editar perfil</a>
+        {% endif %}
     </div>
-{% empty %}
-    <p>No tiene posts todavía</p>
-{% endfor %}
+
+    <h3 class="section-title">Posts</h3>
+
+    {% for post in posts %}
+        <div class="post">
+            <p>{{ post.contenido }}</p>
+            {% if post.imagen %}
+                <img src="{{ post.imagen.url }}">
+            {% endif %}
+            <small>{{ post.fecha }}</small>
+        </div>
+    {% empty %}
+        <div class="empty-state">No tiene posts todavía</div>
+    {% endfor %}
+
+</div>
+</body>
+</html>
